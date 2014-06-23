@@ -1,0 +1,6 @@
+.commit-template
+Debug/
+Server.ncb
+Server/Debug/
+Server/Server.vcproj.XiaoGuo-PC.XiaoGuo.user
+Server/Server.vcproj.LV-PC.LV.user
