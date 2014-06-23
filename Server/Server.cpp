@@ -9,6 +9,8 @@
 #include <event2\event.h>
 #include <event2\event_struct.h>  
 #include <event2\util.h> 
+#include <event2/buffer.h>  
+#include <event2/bufferevent.h>  
 
 using namespace std;
 
@@ -107,11 +109,65 @@ void socket_read(evutil_socket_t  sock, short event, void* arg)
 		return ;
 	}
 
-// 	sockev->pastbeats = 0;  
-// 	printf("pastbeats:\t%d\n", sockev->pastbeats);           //--debug  
-// 	printf("receive data:\t%s   size:\t%d\n", sockev->buffer, size);  
-// 	event_add(sockev->write_ev, NULL);           //添加端口写事件，将数据返回给客户端  
+	// 	sockev->pastbeats = 0;  
+	// 	printf("pastbeats:\t%d\n", sockev->pastbeats);           //--debug  
+	// 	printf("receive data:\t%s   size:\t%d\n", sockev->buffer, size);  
+	// 	event_add(sockev->write_ev, NULL);           //添加端口写事件，将数据返回给客户端  
 }
+
+void readcb(struct bufferevent *bev, void *ctx)
+{
+
+	struct evbuffer *input ,*output;
+	char *request_line = NULL;
+	size_t len = 0;
+
+	input = bufferevent_get_input(bev);
+	output = bufferevent_get_output(bev);
+
+	size_t input_len = evbuffer_get_length(input);  
+	printf("input_len: %d\n", input_len);  
+	size_t output_len = evbuffer_get_length(output);  
+	printf("output_len: %d\n", output_len);  
+
+	while (request_line = evbuffer_readln(input, &len, EVBUFFER_EOL_CRLF))
+	{
+		printf("receive data: %s\n", request_line);
+		free(request_line);
+
+		char *response = "receive OK!\n";
+		evbuffer_add(output, response, strlen(response));
+	}
+
+
+	free(request_line);
+	size_t input_len1 = evbuffer_get_length(input);  
+	printf("input_len1: %d\n", input_len1);  
+	size_t output_len1 = evbuffer_get_length(output);  
+	printf("output_len1: %d\n\n", output_len1);  
+
+}
+
+void errorcb(struct bufferevent *bev, short error, void *ctx)  
+{  
+	if (error & BEV_EVENT_EOF)  
+	{  
+		/* connection has been closed, do any clean up here */  
+		printf("connection closed\n");  
+	}  
+	else if (error & BEV_EVENT_ERROR)  
+	{  
+		/* check errno to see what error occurred */  
+		printf("some other error\n");  
+	}  
+	else if (error & BEV_EVENT_TIMEOUT)  
+	{  
+		/* must be a timeout event handle, handle it */  
+		printf("Timed out\n");  
+	}  
+	bufferevent_free(bev);  
+}  
+
 
 void OnAccept(evutil_socket_t  sock, short event, void *arg)
 {
@@ -135,14 +191,20 @@ void OnAccept(evutil_socket_t  sock, short event, void *arg)
 		printf("Accept error: errno %d --- %s\n", errno, strerror(errno));
 		return;
 	}
+
+	struct bufferevent *bev = NULL;
 	evutil_make_socket_nonblocking(sock);
 
-	event_assign(sockev->read_ev, g_base, ConnectSock, EV_PERSIST, socket_read, sockev);
-	evutil_timerclear(&beat);  
-	beat.tv_sec = sockev->gapbeats;           //定期检查端口是否可读,来判断客户端是否存在  
-	event_add(sockev->read_ev, &beat);  
+	bev = bufferevent_socket_new(g_base, ConnectSock, BEV_OPT_CLOSE_ON_FREE);
 
-	event_assign(sockev->write_ev, g_base, ConnectSock, EV_WRITE, socket_write, sockev->buffer);      
+	bufferevent_setcb(bev, readcb, NULL, errorcb, NULL); 
+	bufferevent_enable(bev, EV_READ|EV_WRITE);
+	// 	event_assign(sockev->read_ev, g_base, ConnectSock, EV_PERSIST, socket_read, sockev);
+	// 	evutil_timerclear(&beat);  
+	// 	beat.tv_sec = sockev->gapbeats;           //定期检查端口是否可读,来判断客户端是否存在  
+	// 	event_add(sockev->read_ev, &beat);  
+	// 
+	// 	event_assign(sockev->write_ev, g_base, ConnectSock, EV_WRITE, socket_write, sockev->buffer);      
 
 }
 
@@ -189,7 +251,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			server_addr.sin_family = AF_INET;
 			server_addr.sin_port = htons(PORT);
 			server_addr.sin_addr.s_addr = INADDR_ANY;
-			
+
 			if(bind(Sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
 			{
 				printf("bind socket error:errno %d -- %s \n", errno, strerror(errno));
@@ -223,7 +285,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			event_base_free(g_base);          //删除base对象  
 		}
-		
+
 	}
 
 	return 0;
