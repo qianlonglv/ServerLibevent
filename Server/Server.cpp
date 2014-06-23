@@ -120,6 +120,7 @@ void readcb(struct bufferevent *bev, void *ctx)
 
 	struct evbuffer *input ,*output;
 	char *request_line = NULL;
+	char *buffer = NULL;
 	size_t len = 0;
 
 	input = bufferevent_get_input(bev);
@@ -130,10 +131,14 @@ void readcb(struct bufferevent *bev, void *ctx)
 	size_t output_len = evbuffer_get_length(output);  
 	printf("output_len: %d\n", output_len);  
 
-	while (request_line = evbuffer_readln(input, &len, EVBUFFER_EOL_CRLF))
+	buffer = new char[input_len];
+	memset(buffer, 0, input_len);
+	/*while (request_line = evbuffer_readln(input, &len, EVBUFFER_EOL_CRLF))*/
+	while (evbuffer_remove(input, buffer, input_len))
 	{
-		printf("receive data: %s\n", request_line);
-		free(request_line);
+		printf("receive data: %s\n", buffer);
+		delete []buffer;
+		buffer = NULL;
 
 		char *response = "receive OK!\n";
 		evbuffer_add(output, response, strlen(response));
