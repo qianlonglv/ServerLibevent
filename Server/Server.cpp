@@ -11,6 +11,7 @@
 #include <event2\util.h> 
 #include <event2/buffer.h>  
 #include <event2/bufferevent.h>  
+#include <io.h>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ typedef struct sock_event {
 
 
 struct event_base* g_base;        //管理所有连接事件  
+int g_ListenNum  = 0;
 
 /* 释放堆分配的sock_ev结构体 */  
 void release_sock_ev(sock_ev *ev)  
@@ -224,21 +226,8 @@ void OnAccept(evutil_socket_t  sock, short event, void *arg)
 
 }
 
-
-int _tmain(int argc, _TCHAR* argv[])
+int beginWork()
 {
-
-	WORD wVersionRequested;
-	WSADATA wsaData;
-	//WinSock初始化
-	wVersionRequested=MAKEWORD(2, 2); //希望使用的WinSock DLL 的版本
-	int ret=WSAStartup(wVersionRequested, &wsaData);
-	if(ret!=0)
-	{
-		printf("WSAStartup() failed!\n");
-		return 0;
-	}
-
 	//初始化 event base
 	struct sockaddr_in server_addr = {};
 	evutil_socket_t Sock = INVALID_SOCKET;
@@ -247,7 +236,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (Sock == INVALID_SOCKET)
 	{
-        perror("create socket failed");
+		perror("create socket failed");
 		system("PAUSE ");
 		return 0;
 	}
@@ -270,14 +259,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			if(bind(Sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
 			{
-                perror("bind socket error");
+				perror("bind socket error");
 				system("PAUSE");
 				return 0;
 			}
 
 			if (listen(Sock, 10) == -1)
 			{
-                perror("listen socket error");
+				perror("listen socket error");
 				system("PAUSE");
 				return 0;
 			}
@@ -303,6 +292,40 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 	}
+}
+
+void LoadConfig()
+{
+
+	if (access("Config.ini", 0) != 0)
+	{
+		printf("配置文件不存在!\n");
+		return;
+	}
+
+	g_ListenNum = ::GetPrivateProfileInt("Config", "ListenNum", 10, _T("Config.ini"));
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	//WinSock初始化
+	wVersionRequested=MAKEWORD(2, 2); //希望使用的WinSock DLL 的版本
+	int ret=WSAStartup(wVersionRequested, &wsaData);
+	if(ret!=0)
+	{
+		printf("WSAStartup() failed!\n");
+		return 0;
+	}
+
+
+	LoadConfig();
+
+
+	beginWork();
+	
 
 	return 0;
 }
