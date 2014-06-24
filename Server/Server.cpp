@@ -70,7 +70,7 @@ void socket_write(evutil_socket_t  sock, short event, void* arg)
 	buffer = (char *)arg;  
 	if (send(sock, buffer, sizeof(*buffer), 0) < 0) {  
 
-		printf("server send msg error: errno %d--%s\n", errno, strerror(errno));      
+        perror("server send msg error");
 		return;   
 	}  
 	memset(buffer, 0, sizeof(*buffer));  
@@ -180,7 +180,7 @@ void OnAccept(evutil_socket_t  sock, short event, void *arg)
 	SOCKET ConnectSock = INVALID_SOCKET;
 	int iAddrSize = 0;
 
-	struct timeval beat;//定时检测客户端数据
+	//struct timeval beat;//定时检测客户端数据 // note by guozs
 	sock_ev *sockev;
 
 
@@ -193,7 +193,7 @@ void OnAccept(evutil_socket_t  sock, short event, void *arg)
 	ConnectSock = accept(sock, (struct sockaddr *)&clientAddr, &iAddrSize);
 	if (ConnectSock == INVALID_SOCKET)
 	{
-		printf("Accept error: errno %d --- %s\n", errno, strerror(errno));
+        perror("Accept error");
 		return;
 	}
 
@@ -236,7 +236,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (Sock == INVALID_SOCKET)
 	{
-		printf("create socket failed! errno : %d --- %s\n", errno, strerror(errno));
+        perror("create socket failed");
 		system("PAUSE ");
 		return 0;
 	}
@@ -259,14 +259,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			if(bind(Sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
 			{
-				printf("bind socket error:errno %d -- %s \n", errno, strerror(errno));
+                perror("bind socket error");
 				system("PAUSE");
 				return 0;
 			}
 
 			if (listen(Sock, 10) == -1)
 			{
-				printf("listen socket error : errno %d -- %s\n", errno, strerror(errno));
+                perror("listen socket error");
 				system("PAUSE");
 				return 0;
 			}
