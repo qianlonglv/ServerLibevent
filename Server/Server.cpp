@@ -134,14 +134,25 @@ void readcb(struct bufferevent *bev, void *ctx)
 	buffer = new char[input_len];
 	memset(buffer, 0, input_len);
 	/*while (request_line = evbuffer_readln(input, &len, EVBUFFER_EOL_CRLF))*/
+	
 	while (evbuffer_remove(input, buffer, input_len))
 	{
 		printf("receive data: %s\n", buffer);
-		delete []buffer;
-		buffer = NULL;
 
 		char *response = "receive OK!\n";
 		evbuffer_add(output, response, strlen(response));
+		
+		if (strcmp(buffer, "GET") == 0)
+		{
+			char *sendData = "Hello world!\n";
+			evbuffer_add(output, sendData, strlen(sendData));
+		}
+		if (buffer != NULL)
+		{
+			delete []buffer;
+			buffer = NULL;
+		}
+		
 	}
 
 
