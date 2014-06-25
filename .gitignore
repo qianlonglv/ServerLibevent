@@ -1,9 +1,5 @@
 .commit-template
 Debug/
-Server.ncb
-Server.suo
-Server/Debug/
-Server/Server.vcproj.XiaoGuo-PC.XiaoGuo.user
-Server/Server.vcproj.LV-PC.LV.user
-Client/Client.vcproj.XiaoGuo-PC.XiaoGuo.user
-Client/Client.vcproj.LV-PC.LV.user
+*.ncb
+*.suo
+*.user
