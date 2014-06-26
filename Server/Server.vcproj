@@ -41,11 +41,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include\"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\ServerApi&quot;;.\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -64,7 +64,7 @@
 				AdditionalDependencies="ws2_32.lib wsock32.lib libevent.lib libevent_core.lib libevent_extras.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=".\libs\"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="libcmt.lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -167,6 +167,10 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}"
+			RelativePathToProject=".\ServerApi\ServerApi.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter

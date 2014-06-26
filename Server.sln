@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcproj", "{F7A4046C-7152-4862-A569-A5118618094A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcproj", "{465013B1-04B7-4FB3-984E-1090E13559FA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerApi", "ServerApi\ServerApi.vcproj", "{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +17,14 @@ Global
 		{F7A4046C-7152-4862-A569-A5118618094A}.Debug|Win32.Build.0 = Debug|Win32
 		{F7A4046C-7152-4862-A569-A5118618094A}.Release|Win32.ActiveCfg = Release|Win32
 		{F7A4046C-7152-4862-A569-A5118618094A}.Release|Win32.Build.0 = Release|Win32
+		{465013B1-04B7-4FB3-984E-1090E13559FA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{465013B1-04B7-4FB3-984E-1090E13559FA}.Debug|Win32.Build.0 = Debug|Win32
+		{465013B1-04B7-4FB3-984E-1090E13559FA}.Release|Win32.ActiveCfg = Release|Win32
+		{465013B1-04B7-4FB3-984E-1090E13559FA}.Release|Win32.Build.0 = Release|Win32
+		{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}.Debug|Win32.Build.0 = Debug|Win32
+		{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}.Release|Win32.ActiveCfg = Release|Win32
+		{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
