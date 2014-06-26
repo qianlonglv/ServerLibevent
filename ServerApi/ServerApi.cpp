@@ -108,7 +108,7 @@ int disConnectServer(SOCKET &sock)
 
 int getString(SOCKET sock, string &sContent)
 {
-	if (WriteData(sock, "GET", strlen("GET")) > 0)
+	if (WriteData(sock, "GET", strlen("GET") + 1) > 0)
 	{
 		char pbuffer[10] = {};
 		ReadData(sock, pbuffer, 10);

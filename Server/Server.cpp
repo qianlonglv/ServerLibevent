@@ -141,13 +141,13 @@ void readcb(struct bufferevent *bev, void *ctx)
 	{
 		printf("receive data: %s\n", buffer);
 
-		char *response = "receive OK!\n";
-		evbuffer_add(output, response, strlen(response));
+// 		char *response = "receive OK!\n";
+// 		evbuffer_add(output, response, strlen(response));
 		
 		if (strcmp(buffer, "GET") == 0)
 		{
 			char *sendData = "Hello world!\n";
-			evbuffer_add(output, sendData, strlen(sendData));
+			evbuffer_add(output, sendData, strlen(sendData) + 1);
 		}
 		if (buffer != NULL)
 		{
