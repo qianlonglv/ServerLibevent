@@ -146,8 +146,8 @@ void readcb(struct bufferevent *bev, void *ctx)
 		
 		if (strcmp(buffer, "GET") == 0)
 		{
-			char *sendData = "Hello world!\n";
-			evbuffer_add(output, sendData, strlen(sendData) + 1);
+			//char *sendData = "Hello world!\n";
+			evbuffer_add(output, "Hello world!\n", strlen("Hello world!\n") + 1);
 		}
 		if (buffer != NULL)
 		{

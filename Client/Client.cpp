@@ -16,7 +16,7 @@ UINT WINAPI ThreadGetData(LPVOID lp)
 
 	string sContent;
 	getString(*pSock , sContent);
-	printf("收到服务端发来的数据：%s ThreadID : %d\n", sContent, dwThreadID);
+	printf("收到服务端发来的数据：%s ThreadID : %d\n", sContent.c_str(), dwThreadID);
 
 	return 0;
 
