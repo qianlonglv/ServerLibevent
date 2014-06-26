@@ -46,3 +46,11 @@ int tcpBasicTest(const char *hostip, u_short port)
     connectionClose(sHost);
     return 0;
 }
+
+/***
+    单连接循环发送
+*/
+int SingleLinkTest(const char *hostip, u_short port)
+{
+    return 0;
+}
