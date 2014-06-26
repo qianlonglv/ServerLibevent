@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include\"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\ServerApi&quot;;.\include\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -167,6 +167,10 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{A33E8D64-6B59-4EE2-94A9-E78D4C0A2BE1}"
+			RelativePathToProject=".\ServerApi\ServerApi.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
