@@ -18,3 +18,6 @@
 #include <errno.h>
 #include <string.h>
 #include <winsock.h>
+
+#include "TCPClient.h"
+#include "FunctionTest.h"
