@@ -73,9 +73,9 @@ ReadData(SOCKET sock, char *pBuffer, int iReadLen)
 	return TRUE;
 }
 
-int ConnectServer(SOCKET &sock, string sIp,	int iPort)
+int ConnectServer(SOCKET &sock, char *sIp,	int iPort)
 {
-	if (sock != INVALID_SOCKET || sIp == "" || iPort == 0)
+	if (sock != INVALID_SOCKET || sIp == NULL || iPort == 0)
 	{
 		return FALSE;
 	}
@@ -89,7 +89,7 @@ int ConnectServer(SOCKET &sock, string sIp,	int iPort)
 	SOCKADDR_IN sevAddr = {};
 	sevAddr.sin_family = AF_INET;
 	sevAddr.sin_port = htons(iPort);
-	sevAddr.sin_addr.s_addr = inet_addr(sIp.c_str());
+	sevAddr.sin_addr.s_addr = inet_addr(sIp);
 	
 	if (connect(sock, (SOCKADDR *)&sevAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
@@ -106,13 +106,11 @@ int disConnectServer(SOCKET &sock)
 	return TRUE;
 }
 
-int getString(SOCKET sock, string &sContent)
+int getString(SOCKET sock, char *sContent, int iLen)
 {
 	if (WriteData(sock, "GET", strlen("GET") + 1) > 0)
 	{
-		char pbuffer[20] = {};
-		ReadData(sock, pbuffer, 20);
-		sContent = pbuffer;
+		ReadData(sock, sContent, iLen);
 
 		return TRUE;
 	}
@@ -120,11 +118,11 @@ int getString(SOCKET sock, string &sContent)
 	return FALSE;
 }
 
-int setString(SOCKET sock, string sSendData)
+int setString(SOCKET sock, char *sSendData, int iLen)
 {
-	if (sock != INVALID_SOCKET && sSendData != "")
+	if (sock != INVALID_SOCKET && sSendData != NULL)
 	{
-		return WriteData(sock, (LPVOID)sSendData.c_str(), sSendData.size());
+		return WriteData(sock, (LPVOID)sSendData, iLen);
 	}
 
 	return FALSE;

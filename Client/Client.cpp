@@ -14,9 +14,14 @@ UINT WINAPI ThreadGetData(LPVOID lp)
 	UINT dwThreadID = GetCurrentThreadId();
 	SOCKET *pSock = (SOCKET *)lp;
 
-	string sContent;
-	getString(*pSock , sContent);
-	printf("收到服务端发来的数据：%s ThreadID : %d\n", sContent.c_str(), dwThreadID);
+	while (TRUE)
+	{
+		char sContent[20];
+		getString(*pSock , sContent, 20);
+		printf("收到服务端发来的数据：%s ThreadID : %d\n", sContent, dwThreadID);
+		Sleep(100);
+	}
+
 
 	return 0;
 
@@ -37,8 +42,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 
-    const char *sIP = "127.0.0.1";
-    const int iPort = 5222;
+    char *sIP = "127.0.0.1";
+    const int iPort = 6444;
 	vector<SOCKET *> vSocket;	
 
 	for (int i = 0; i < 200; i++)
@@ -57,12 +62,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	}
 
+	system("PAUSE");
+
 	for (int i = 0; i < 200; i++)
 	{
 		SOCKET *sockTmp = vSocket[i];
 		if (sockTmp != NULL)
 		{
-			//disConnectServer(sockTmp);
+			disConnectServer(*sockTmp);
 			
 			*sockTmp = INVALID_SOCKET;
 			delete sockTmp;

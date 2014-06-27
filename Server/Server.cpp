@@ -15,7 +15,6 @@
 
 using namespace std;
 
-#define PORT 5222
 #define BUFFERSIZE 1024
 
 typedef struct sock_event {  
@@ -29,6 +28,7 @@ typedef struct sock_event {
 
 
 struct event_base* g_base;        //管理所有连接事件  
+int g_port = 0;
 int g_ListenNum  = 0;
 
 /* 释放堆分配的sock_ev结构体 */  
@@ -63,59 +63,7 @@ sock_ev* create_sock_ev(int gapbeats, int maxbeats)
 	return se;    
 }  
 
-void socket_write(evutil_socket_t  sock, short event, void* arg)  
-{  
-	char* buffer;  
-	if (!arg)  
-		return;  
 
-	buffer = (char *)arg;  
-	if (send(sock, buffer, sizeof(*buffer), 0) < 0) {  
-
-        perror("server send msg error");
-		return;   
-	}  
-	memset(buffer, 0, sizeof(*buffer));  
-}  
-
-
-void socket_read(evutil_socket_t  sock, short event, void* arg)  
-{  
-	int size = 0;  
-	sock_ev* sockev = (sock_ev*)arg;  
-	if(!sockev)  
-		return;  
-
-	memset(sockev->buffer, 0, BUFFERSIZE);  
-
-	while (1)
-	{
-		size = recv(sock, sockev->buffer, BUFFERSIZE, 0);
-		if (size <= 0)
-		{
-			break;
-		}
-
-		printf("receive data:%s   size:%d\n", sockev->buffer, size);
-	}
-
-	if (size <= 0)
-	{
-		sockev->pastbeats++;
-		if (sockev->pastbeats >= sockev->maxbeats)
-		{
-			release_sock_ev(sockev);
-			closesocket(sock);
-		}
-
-		return ;
-	}
-
-	// 	sockev->pastbeats = 0;  
-	// 	printf("pastbeats:\t%d\n", sockev->pastbeats);           //--debug  
-	// 	printf("receive data:\t%s   size:\t%d\n", sockev->buffer, size);  
-	// 	event_add(sockev->write_ev, NULL);           //添加端口写事件，将数据返回给客户端  
-}
 
 void readcb(struct bufferevent *bev, void *ctx)
 {
@@ -135,7 +83,7 @@ void readcb(struct bufferevent *bev, void *ctx)
 
 	buffer = new char[input_len];
 	memset(buffer, 0, input_len);
-	/*while (request_line = evbuffer_readln(input, &len, EVBUFFER_EOL_CRLF))*/
+
 	
 	while (evbuffer_remove(input, buffer, input_len))
 	{
@@ -163,6 +111,8 @@ void readcb(struct bufferevent *bev, void *ctx)
 	printf("input_len1: %d\n", input_len1);  
 	size_t output_len1 = evbuffer_get_length(output);  
 	printf("output_len1: %d\n\n", output_len1);  
+
+	printf("CurentThreadID : %d\n", ::GetCurrentThreadId());
 
 }
 
@@ -211,18 +161,12 @@ void OnAccept(evutil_socket_t  sock, short event, void *arg)
 	}
 
 	struct bufferevent *bev = NULL;
-	evutil_make_socket_nonblocking(sock);
+	evutil_make_socket_nonblocking(ConnectSock);
 
 	bev = bufferevent_socket_new(g_base, ConnectSock, BEV_OPT_CLOSE_ON_FREE);
 
 	bufferevent_setcb(bev, readcb, NULL, errorcb, NULL); 
 	bufferevent_enable(bev, EV_READ|EV_WRITE);
-	// 	event_assign(sockev->read_ev, g_base, ConnectSock, EV_PERSIST, socket_read, sockev);
-	// 	evutil_timerclear(&beat);  
-	// 	beat.tv_sec = sockev->gapbeats;           //定期检查端口是否可读,来判断客户端是否存在  
-	// 	event_add(sockev->read_ev, &beat);  
-	// 
-	// 	event_assign(sockev->write_ev, g_base, ConnectSock, EV_WRITE, socket_write, sockev->buffer);      
 
 }
 
@@ -254,7 +198,7 @@ int beginWork()
 		{
 			memset(&server_addr, 0, sizeof(server_addr));
 			server_addr.sin_family = AF_INET;
-			server_addr.sin_port = htons(PORT);
+			server_addr.sin_port = htons(g_port);
 			server_addr.sin_addr.s_addr = INADDR_ANY;
 
 			if(bind(Sock, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1)
@@ -297,13 +241,20 @@ int beginWork()
 void LoadConfig()
 {
 
-	if (access("Config.ini", 0) != 0)
+	char *sConfigName = _T("Config.ini");
+	if (access(sConfigName, 0) != 0)
 	{
 		printf("配置文件不存在!\n");
 		return;
 	}
 
-	g_ListenNum = ::GetPrivateProfileInt("Config", "ListenNum", 10, _T("Config.ini"));
+	char sBuffer[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, sBuffer);
+
+	char sConfigPath[100];
+	sprintf_s(sConfigPath, 100, "%s\\%s", sBuffer, sConfigName);
+	g_ListenNum = ::GetPrivateProfileInt("Config", "ListenNum", 10, sConfigPath);
+	g_port = ::GetPrivateProfileInt("Config", "ListenPort", 5222, sConfigPath);
 }
 
 int _tmain(int argc, _TCHAR* argv[])
